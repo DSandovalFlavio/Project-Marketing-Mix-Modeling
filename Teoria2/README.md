@@ -1,19 +1,16 @@
-# Introduccion al Marketing Mix Modeling en Python
+# Marketing Mix Modeling en Python
 
-¿Qué inversión publicitaria está impulsando realmente sus ventas?
+En este modelo capturaremos mejor la realidad, al incorporar conocimientos de marketing como:
 
-Aun que este aun es un modelo muy simple que no captura la realidad del problema, es una buen paso para iniciar a plantear preguntas mas complejas.
+- Adstock
+- Diminished Return
+- Advertising Carryover Effect 
 
-Como:
-
-- ¿Si banners tiene el mejor ROI deberiamos de invertir todo el presupuesto en banners?
-- ¿Podriamos tener ventas exponenciales si invertimos exponencialmente en banners?
-
-En el siguiente [Proyecto](../Teoria2/README.md) resolveremos estos problemas.
+Los cuales nos ayudaran a mejorar la capacidad del modelo para predecir mejor la contribucion de cada medio en las ventas. 
 
 ## Links
 
-- [Blog](https://towardsdatascience.com/introduction-to-marketing-mix-modeling-in-python-d0dd81f4e794)
+- [Blog](https://towardsdatascience.com/an-upgraded-marketing-mix-modeling-in-python-5ebb3bddc1b6)
 - [Data](https://github.com/Garve/datasets/blob/4576d323bf2b66c906d5130d686245ad205505cf/mmm.csv)
-- [JupyterNotebook](Teoria1MMMSimple.ipynb)
+- [JupyterNotebook](Teoria2MMMAvanzado.ipynb)
 
