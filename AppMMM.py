@@ -92,6 +92,15 @@ def main():
     data_CF['Año'] = data_CF['Año'].astype(str)
     data_CF['Inversion Total'] = data_CF[['Print', 'Email', 'Radio', 'Facebook', 'Google', 'PayTV', 'OpenTV']].sum(axis=1)
 
+    # Grafico de pie
+    pie_year = px.pie(data_CF, 
+                    values='Inversion Total',  
+                    names='Año', 
+                    title='Inversion por año')
+    st.plotly_chart(pie_year)
+    st.markdown("""Se observa que la inversión en los años 2018 y 2020 fue la mayor, 
+                con una inversión de $1.8 millones de pesos.""")
+
     # Comportamiento de la inversion por mes a lo largo de los años
     com_inv_mes = px.bar(data_CF.groupby(['Año', 'Mes_No', 'Mes'])['Inversion Total'].sum().reset_index(), 
                         x="Mes", 
@@ -100,6 +109,23 @@ def main():
                         text="Inversion Total")
     com_inv_mes.update_traces(texttemplate='%{text:.2s}')
     st.plotly_chart(com_inv_mes)
+
+    # Grafico de pie con radio button para elegir el año
+    # crear una lista con los años para streamlit
+    lista_anios = data_CF['Año'].unique()
+    opcion_anio = st.selectbox('Seleccione el año', lista_anios)
+    # grafico de pie para el año seleccionado
+    pie_anio = px.pie(pd.melt( data_CF.query('Año == @opcion_anio'),
+                                id_vars=['Date'], 
+                                value_vars=['Print', 'Email', 'Radio', 'Facebook', 'Google', 'PayTV', 'OpenTV'],
+                                var_name= "Medio",
+                                value_name= "Inversion"),
+                    values='Inversion', 
+                    names='Medio',
+                    title='Share of Investment by Media')
+    st.plotly_chart(pie_anio)
+
+
 
     # graficar la data en streamlit
     df = data[['Sales','Print', 'Email', 'Radio', 'Facebook', 'Google', 'PayTV', 'OpenTV']].corr().round(2)
