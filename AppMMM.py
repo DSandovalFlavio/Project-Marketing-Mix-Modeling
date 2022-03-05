@@ -63,9 +63,9 @@ def main():
     # Mostrar la data en streamlit
     data = cargar_datos()
     st.write(data)
-    st.markdown("""### Analisis Exploratorio
-                
-A continuación se decriben las variables contenidas en el dataset.""")
+    st.markdown("""
+                ### Analisis Exploratorio
+                A continuación se decriben las variables contenidas en el dataset.""")
     st.markdown("""
                 | **VARIABLE** |                **DESCRIPCIÓN**                      |
                 | :------------|----------------------------------------------------:| 
@@ -209,11 +209,11 @@ A continuación se decriben las variables contenidas en el dataset.""")
             'Radio', 'Facebook', 'Google', 
             'PayTV', 'OpenTV']].corr()[['Sales']].round(2).sort_values(by='Sales', 
                                                                         ascending=True)
-    fig = ff.create_annotated_heatmap( df.values.tolist(),
+    corr = ff.create_annotated_heatmap( df.values.tolist(),
                                         x=df.columns.values.tolist(),
                                         y=df.index.values.tolist(),
                                         colorscale='Viridis')
-    st.plotly_chart(fig)
+    st.plotly_chart(corr)
     
     st.markdown("""Google tiene la mayor correlacion con las ventas,
                 Email aun que no es donde mas se invierte tiene un buen coeficiente,
@@ -241,6 +241,80 @@ A continuación se decriben las variables contenidas en el dataset.""")
         """)
     st.image('./Resources/Pipeline.png', width=800)
     
+    # Data con Features Engineering
+    st.markdown("""#### Como cambia la correlacion entre las ventas y la inversion de cada medio con la implementacion de Features Engineering""")
+    data_FE_raw = pd.read_csv('./DataSaturada.csv').set_index('Date')
+    data_FE = data_FE_raw[['Sales','OpenTV_sat', 'PayTV_sat', 'Radio_sat', 'Print_sat', 'Facebook_sat', 'Google_sat', 'Email_sat']]
+    data_FE = data_FE.corr()[['Sales']].round(2).sort_values(by='Sales', 
+                                                            ascending=True)
+    corr_FE = ff.create_annotated_heatmap( data_FE.values.tolist(),
+                                    x=data_FE.columns.values.tolist(),
+                                    y=data_FE.index.values.tolist(),
+                                    colorscale='Viridis')
+    st.plotly_chart(corr_FE)
+    
+    st.markdown("""#### Que tan saturados se encuentran los medios?""")
+    # Curvas de saturacion
+    medios2 = ['Email', 'Radio', 'Facebook', 'Google', 'PayTV', 'OpenTV', 'Print']
+    medio = st.selectbox('Selecciona un medio: ', medios2)
+    medio_sat = medio+'_sat'
+    data_adstock = data_FE_raw[data_FE_raw[medio_sat] != 0]
+    curvas_sat = px.scatter(data_adstock,
+                            x = medio, 
+                            y = medio_sat)
+    st.plotly_chart(curvas_sat)
+    des_curvas = { 'Email' : 'Email aun no esta saturado, es decir, se podria invertir un poco mas para obtener una mejor atribucion', 
+                    'Radio' : 'Radio aun no esta saturado, se ve un crecimiento mas lineal, se podria invertir mas para obtener una mejor atribucion', 
+                    'Facebook' : 'Facebook ya esta saturado, se tendria que analizar si la marca solo esta decidiendo tener precencia en el medio',
+                    'Google' : 'Google ya esta saturado, se tendria que analizar si la marca solo esta decidiendo tener precencia en el medio', 
+                    'PayTV': 'PayTV ya esta saturado, se tendria que analizar si la marca solo esta decidiendo tener precencia en el medio',  
+                    'OpenTV' : 'OpenTV aun no esta saturado, se ve un crecimiento mas lineal, se podria invertir mas para obtener una mejor atribucion', 
+                    'Print' : 'Print aun no esta saturado, es decir, se podria invertir un poco mas para obtener una mejor atribucion'}
+    st.markdown(des_curvas[medio])
+    
+    st.markdown("""#### ROI - Retorno de inversion""")
+    # ROI
+    atribucion_ventas_medio = pd.read_csv('./adj_contributions.csv')
+    atribucion_ventas_medio['Date'] = pd.to_datetime(atribucion_ventas_medio['Date'])
+    atribucion_ventas_medio = atribucion_ventas_medio.set_index('Date')
+    atribucion_ventas_medio = atribucion_ventas_medio.rename(columns=lambda x: x+'_revenue')
+    atribucion_ventas_medio = atribucion_ventas_medio.drop(columns=['Base_revenue'])
+    
+    investment_medio = pd.read_csv('./Data/mmm.csv')
+    investment_medio['Date'] = pd.to_datetime(investment_medio['Date'])
+    investment_medio = investment_medio.set_index('Date')
+    investment_medio = investment_medio.rename(columns=lambda x: x+'_investment')
+    investment_medio = investment_medio.drop(columns=['Sales_investment'])
+    
+    # calcular el ROI para cada medio
+    atribucion_investment_medio = pd.merge(investment_medio, atribucion_ventas_medio, how='inner', left_index=True, right_index=True)
+    amedios3 = ['OpenTV', 'Print', 'Email', 'Radio', 'Facebook', 'Google', 'PayTV']
+    for medio in amedios3:
+        atribucion_investment_medio[medio+'_ROI'] = (atribucion_investment_medio[medio+'_revenue'] - atribucion_investment_medio[medio+'_investment'])/atribucion_investment_medio[medio+'_investment']
+    
+    amedios4 = ['OpenTV', 'Print', 'Facebook', 'Google', 'PayTV', 'Email', 'Radio']
+    medio_select = st.selectbox('Selecciona un medio: ', amedios4)
+    atribucion_investment_medio = atribucion_investment_medio[atribucion_investment_medio[medio_select+'_investment'] != 0]
+    roi_plot = make_subplots(specs=[[{"secondary_y": True}]])
+    # revenue vs investment
+    roi_plot.add_trace(go.Scatter(  x=atribucion_investment_medio[medio_select+'_investment'],
+                                    y=atribucion_investment_medio[medio_select+'_revenue'],
+                                    mode='markers',
+                                    name='Revenue vs Investment'),
+                        secondary_y=False)
+    # revenue vs ROI
+    roi_plot.add_trace(go.Scatter(  x=atribucion_investment_medio[medio_select+'_investment'],
+                                    y=atribucion_investment_medio[medio_select+'_ROI'],
+                                    mode='markers',
+                                    name='Revenue vs ROI'),
+                        secondary_y=True)
+    roi_plot.update_layout( #title_text=medio_select+' ROI',
+                            yaxis_title='Revenue',
+                            yaxis2_title='ROI',
+                            xaxis_title='Investment')
+    st.plotly_chart(roi_plot)
 
 if __name__ == '__main__':
     main()
+    
+
