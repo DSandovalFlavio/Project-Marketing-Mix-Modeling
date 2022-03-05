@@ -3,11 +3,14 @@
 # Framework: streamlit
 
 #  Importacion de librerias
+from tkinter import Y
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.figure_factory as ff
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 def cargar_datos():
     """
@@ -23,7 +26,7 @@ def main():
     # Titulo de la aplicacion
     st.title("Marketing Mix Model (MMM)")
     st.markdown("""By [@DSandovalFlavio](https://github.com/DSandovalFlavio) and
-                      [@Chesar832](https://github.com/Chesar832)""")
+                    [@Chesar832](https://github.com/Chesar832)""")
     # Descripcion de la aplicacion
     st.markdown("""
                 ## Problema
@@ -60,7 +63,9 @@ def main():
     # Mostrar la data en streamlit
     data = cargar_datos()
     st.write(data)
-    st.markdown("""A continuación se decriben las variables contenidas en el dataset.""")
+    st.markdown("""### Analisis Exploratorio
+                
+A continuación se decriben las variables contenidas en el dataset.""")
     st.markdown("""
                 | **VARIABLE** |                **DESCRIPCIÓN**                      |
                 | :------------|----------------------------------------------------:| 
@@ -77,7 +82,6 @@ def main():
     st.markdown("""
                 ---
                 #### Como a inviertido la marca a lo largo de los años?
-                
                 """)
     # Data para graficar
     data_CF = data.copy()
@@ -95,11 +99,9 @@ def main():
     # Grafico de pie
     pie_year = px.pie(data_CF, 
                     values='Inversion Total',  
-                    names='Año', 
-                    title='Inversion por año')
+                    names='Año')
     st.plotly_chart(pie_year)
-    st.markdown("""Se observa que la inversión en los años 2018 y 2020 fue la mayor, 
-                con una inversión de $1.8 millones de pesos.""")
+    st.markdown("""Se observa que la inversión en los años 2018 y 2020 fueron las mas altas.""")
 
     # Comportamiento de la inversion por mes a lo largo de los años
     com_inv_mes = px.bar(data_CF.groupby(['Año', 'Mes_No', 'Mes'])['Inversion Total'].sum().reset_index(), 
@@ -109,7 +111,16 @@ def main():
                         text="Inversion Total")
     com_inv_mes.update_traces(texttemplate='%{text:.2s}')
     st.plotly_chart(com_inv_mes)
+    st.markdown("""
+                - Se observa que la inversión en los meses de Junio y Octubre fueron las mas altas
+                - En Junio se hace hizo la mayor inversion 2020 y 2019 
+                - Abril y Mayo del 2019 y 2018 fueron muy parecidas inversion
+                - Noviembre normalmente baja la inversion para subir en Diciembre
+                """)
 
+    st.markdown("""
+                #### Como se distribuye la inversion en cada medio a lo largo de los años?
+                """)
     # Grafico de pie con radio button para elegir el año
     # crear una lista con los años para streamlit
     lista_anios = data_CF['Año'].unique()
@@ -121,21 +132,114 @@ def main():
                                 var_name= "Medio",
                                 value_name= "Inversion"),
                     values='Inversion', 
-                    names='Medio',
-                    title='Share of Investment by Media')
+                    names='Medio')
     st.plotly_chart(pie_anio)
+    inv_año = { '2018': '''
+                        - El 75% de la inversión fue en los medios OpenTV, PayTV, Google y Radio
+                        - El 25% de la inversión fue en los medios impresos, email y Facebook''', 
+                '2019': '''
+                        - El 69% de la inversión fue en los medios OpenTV, PayTV, Google y Radio
+                        - El 31% de la inversión fue en los medios impresos, email y Facebook''', 
+                '2020': '''
+                        - El 76% de la inversión fue en los medios OpenTV, PayTV, Google y Radio
+                        - El 24% de la inversión fue en los medios impresos, email y Facebook''', 
+                '2021': '''
+                        - El 77% de la inversión fue en los medios OpenTV, PayTV, Google y Radio
+                        - El 23% de la inversión fue en los medios impresos, email y Facebook'''}
+    st.markdown(inv_año[opcion_anio])
+    
+    st.markdown("""#### Como se distribuye generalmente la inversión en los medios""")
+    list_metrics = ['mean', 'std', 'max', 'cv']
+    opcion_metric = st.selectbox('Ordenar por: ', list_metrics)
+    # Comportamiento de la inversion en medios a total
+    data_inv_medio = data_CF[[ 'Print', 'Email', 'Radio', 
+                                'Facebook', 'Google', 'PayTV', 
+                                'OpenTV']].describe().round(2).T
+    data_inv_medio['cv'] = (data_inv_medio['std'] / data_inv_medio['mean']).round(3)
+    data_inv_medio = data_inv_medio[list_metrics].sort_values(by=opcion_metric, ascending=True)
+    heat_dist = ff.create_annotated_heatmap( data_inv_medio.values.tolist(),
+                                        x=data_inv_medio.columns.values.tolist(),
+                                        y=data_inv_medio.index.values.tolist(),
+                                        colorscale='Viridis')
+    st.plotly_chart(heat_dist)
+    
+    st.markdown("""
+                - La mayor inversion se llevo acabo en OpenTV, con una inversion de 18,164.39
+                - La menor inversion se llevo acabo en Email, con una inversion de 873.80
+                - Google y Radio tienen una distribucion de inversiones muy similar 
+                - La inversion en los medios como PayTV, Open TV y Facebook son muy similares
+                - En promedio seinvierten por lo menos 1000 pesos en los medios Facebook, Print, Email
+                - En promedio un poco mas de 3000 dolares en medios paytv opentv radio google
+                """)
+    
+    medios = ['Print', 'Email', 'Radio', 'Facebook', 'Google', 'PayTV', 'OpenTV']
+    opcion_metric = st.selectbox('Selecciona un medio: ', medios)
+    scatter_medio = go.Figure(data=[go.Scatter(x=data_CF['Date'], y=data_CF[opcion_metric], name=opcion_metric)])
+    scatter_medio.update_layout(width=800, height=300)
+    st.plotly_chart(scatter_medio)
+    st.markdown("""podemos ver que print y email mantienen sus inversiones por mas numero de semanas,
+                    mientras que los demas medios tienden a prender y apagar inversiones cada semana""")
+    
+    # Como afecta la inversion total de medios en las ventas
+    st.markdown("""#### Como afecta la inversion total de medios en las ventas? """)
+    
+    data_CF['year_month'] = data_CF['Date'].dt.strftime('%Y-%m')
+    data_CF['InversionTotal'] = data_CF[['Print', 'Email', 'Radio', 'Facebook', 'Google', 'PayTV', 'OpenTV']].sum(axis=1)
+    data_tem = data_CF.groupby(['year_month'], as_index = False )['InversionTotal', 'Sales'].sum()
 
-
-
+    inv_ventas = make_subplots(specs=[[{"secondary_y": True}]])
+    inv_ventas.add_trace(go.Bar(x=data_tem['year_month'], 
+                        y=data_tem['Sales'], 
+                        marker_color='LightSkyBlue',
+                        name='Sales'), secondary_y=False)
+    inv_ventas.add_trace(go.Scatter(x=data_tem['year_month'], 
+                            y=data_tem['InversionTotal'],
+                            marker_color='MediumPurple',
+                            name='InversionTotal'), secondary_y=True)
+    inv_ventas.update_layout(
+                        xaxis_title='Date', 
+                        yaxis_title='Inversion Total', 
+                        barmode='group')
+    inv_ventas.update_layout(width=800, height=500)
+    st.plotly_chart(inv_ventas)
+    st.markdown('Las ventas responden positivamente a la inversion total de medios')
+    st.markdown('#### Como se correlacionan las ventas con la inversion en cada medio')
     # graficar la data en streamlit
-    df = data[['Sales','Print', 'Email', 'Radio', 'Facebook', 'Google', 'PayTV', 'OpenTV']].corr().round(2)
+    df = data[['Sales','Print', 'Email', 
+            'Radio', 'Facebook', 'Google', 
+            'PayTV', 'OpenTV']].corr()[['Sales']].round(2).sort_values(by='Sales', 
+                                                                        ascending=True)
     fig = ff.create_annotated_heatmap( df.values.tolist(),
                                         x=df.columns.values.tolist(),
                                         y=df.index.values.tolist(),
                                         colorscale='Viridis')
-    fig.update_layout(title_text='Correlacion')
-    fig['data'][0]['showscale'] = True
     st.plotly_chart(fig)
+    
+    st.markdown("""Google tiene la mayor correlacion con las ventas,
+                Email aun que no es donde mas se invierte tiene un buen coeficiente,
+                PayTV por el contrario se invierte mucho y no tiene un coeficiente tan bueno como los demas medios""")
+    st.markdown("""
+                ### Modeling
+                El objetivo de este modelo es obtener la atribucion de cada medio a las ventas,
+                y para obtener estos valores se utilizara como base una regresion lineal multiple, añadiendo 
+                ingenieria de caracteristicas propias de marketing como lo son:
+                
+                - **Efectos de Arrastre**: Con esto se modela el impacto de la inversion en las semanas siguientes
+                    a la inversion mediante un efecto de degradacion semana a semana, estos parametros de cuantas semanas y con que fuerza
+                    dura la degradacion sera optimizado en el proceso de modeling, para obtener el mejor parametro para cada medio.
+                - **Efecto de Saturacion**: Con esto se modela como es que el medio se satura, es decir, cuando se invierten los primeros 10000 pesos
+                    tiene un mayor efecto, que cuando de invierten 5000 pesos mas estos ya no generan la mitad de los beneficios que generaron los primeros 10000,
+                    para generar este efecto se aplican funciones no lineales, como la exponencial o en este caso Adbudg.
+                
+                **Regresion Lineal Multiple** se utilizara con las variables que ya cuentan con las tranformaciones,
+                para obtener los coeficientes de la atribucion de cada medio a las ventas.
+                
+                **ROI**: con los valores de ventas por medio y la inversion de cada medio podemos obtener el retorno de inversion, 
+                es decir, el beneficio que se obtiene de la inversion de cada medio.
+                
+                Por ultimo graficaremos las curvas de retorno de inversion para cada medio, y el ROI para obtener los mejores montos de inversion.
+        """)
+    st.image('./Resources/Pipeline.png', width=800)
     
 
 if __name__ == '__main__':
