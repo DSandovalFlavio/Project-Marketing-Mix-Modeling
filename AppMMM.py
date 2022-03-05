@@ -37,7 +37,7 @@ def main():
                 ### *"La mitad del dinero que me gasto en publicidad es un desperdicio: el problema es que no sé qué mitad es"*
                 John Wanamaker
 
-                ## ¿Ques es el Marketing Mix Model (MMM)?
+                ## ¿Que es el Marketing Mix Model (MMM)?
                 El marketing mix modeling es un tipo de modelado que permite conocer 
                 la relación entre cada canal de marketing en los que se invierte dentro 
                 de una empresa y sus respectivos resultados (ventas)
@@ -47,7 +47,7 @@ def main():
                 inversión y ventas por canal. Además, permite predecir escenarios futuros y 
                 el comportamiento del ROI.
 
-                **Que se obtiene con el modelado?**
+                **¿Que se obtiene con el modelado?**
                 
                 Se espera obtener curvas de saturación por cada canal disponible en el 
                 conjunto de datos elegido, para conocer qué tipo de patrón de inversión es el más 
@@ -64,24 +64,24 @@ def main():
     data = cargar_datos()
     st.write(data)
     st.markdown("""
-                ### Analisis Exploratorio
+                ### Análisis Exploratorio
                 A continuación se decriben las variables contenidas en el dataset.""")
     st.markdown("""
                 | **VARIABLE** |                **DESCRIPCIÓN**                      |
                 | :------------|----------------------------------------------------:| 
-                | Date         | Fecha en la que se realizó la inversión             |
+                | Date         | Fecha en la que se realizó la inversión.             |
                 | OpenTV       | Presupuesto de promoción televisiva abierta.        |
                 | PayTV        | Presupuesto de promoción televisiva de paga.        |
-                | Radio        | Presupuesto de promoción radiofónica                |
-                | Print        | Presupuesto de promoción en medios impresos         |
-                | Facebook     | Presupuesto de promoción en Facebook                |
-                | Google       | Presupuesto de promoción en Google                  |
-                | Email        | Presupuesto de promoción en correos publicitarios   |
-                | Sales        | Ventas obtenidas                                    |
+                | Radio        | Presupuesto de promoción radiofónica.                |
+                | Print        | Presupuesto de promoción en medios impresos.         |
+                | Facebook     | Presupuesto de promoción en Facebook.                |
+                | Google       | Presupuesto de promoción en Google.                  |
+                | Email        | Presupuesto de promoción en correos publicitarios.   |
+                | Sales        | Ventas obtenidas.                                    |
                 """)
     st.markdown("""
                 ---
-                #### Como a inviertido la marca a lo largo de los años?
+                #### ¿Como a inviertido la marca a lo largo de los años?
                 """)
     # Data para graficar
     data_CF = data.copy()
@@ -101,7 +101,7 @@ def main():
                     values='Inversion Total',  
                     names='Año')
     st.plotly_chart(pie_year)
-    st.markdown("""Se observa que la inversión en los años 2018 y 2020 fueron las mas altas.""")
+    st.markdown("""Se observa que la inversión en los años 2018 y 2020 fueron las más altas.""")
 
     # Comportamiento de la inversion por mes a lo largo de los años
     com_inv_mes = px.bar(data_CF.groupby(['Año', 'Mes_No', 'Mes'])['Inversion Total'].sum().reset_index(), 
@@ -112,14 +112,14 @@ def main():
     com_inv_mes.update_traces(texttemplate='%{text:.2s}')
     st.plotly_chart(com_inv_mes)
     st.markdown("""
-                - Se observa que la inversión en los meses de Junio y Octubre fueron las mas altas
-                - En Junio se hace hizo la mayor inversion 2020 y 2019 
-                - Abril y Mayo del 2019 y 2018 fueron muy parecidas inversion
-                - Noviembre normalmente baja la inversion para subir en Diciembre
+                - Se observa que la inversión en los meses de Junio y Octubre fueron las más altas.
+                - En Junio se hace hizo la mayor inversión 2020 y 2019. 
+                - Abril y Mayo del 2019 y 2018 fueron muy parecidas inversión.
+                - Noviembre normalmente baja la inversión para subir en Diciembre.
                 """)
 
     st.markdown("""
-                #### Como se distribuye la inversion en cada medio a lo largo de los años?
+                #### ¿Cómo se distribuye la inversión en cada medio a lo largo de los años?
                 """)
     # Grafico de pie con radio button para elegir el año
     # crear una lista con los años para streamlit
@@ -135,20 +135,20 @@ def main():
                     names='Medio')
     st.plotly_chart(pie_anio)
     inv_año = { '2018': '''
-                        - El 75% de la inversión fue en los medios OpenTV, PayTV, Google y Radio
-                        - El 25% de la inversión fue en los medios impresos, email y Facebook''', 
+                        - El 75% de la inversión fue en los medios OpenTV, PayTV, Google y Radio.
+                        - El 25% de la inversión fue en los medios impresos, email y Facebook.''', 
                 '2019': '''
-                        - El 69% de la inversión fue en los medios OpenTV, PayTV, Google y Radio
-                        - El 31% de la inversión fue en los medios impresos, email y Facebook''', 
+                        - El 69% de la inversión fue en los medios OpenTV, PayTV, Google y Radio.
+                        - El 31% de la inversión fue en los medios impresos, email y Facebook.''', 
                 '2020': '''
-                        - El 76% de la inversión fue en los medios OpenTV, PayTV, Google y Radio
-                        - El 24% de la inversión fue en los medios impresos, email y Facebook''', 
+                        - El 76% de la inversión fue en los medios OpenTV, PayTV, Google y Radio.
+                        - El 24% de la inversión fue en los medios impresos, email y Facebook.''', 
                 '2021': '''
-                        - El 77% de la inversión fue en los medios OpenTV, PayTV, Google y Radio
-                        - El 23% de la inversión fue en los medios impresos, email y Facebook'''}
+                        - El 77% de la inversión fue en los medios OpenTV, PayTV, Google y Radio.
+                        - El 23% de la inversión fue en los medios impresos, email y Facebook.'''}
     st.markdown(inv_año[opcion_anio])
     
-    st.markdown("""#### Como se distribuye generalmente la inversión en los medios""")
+    st.markdown("""#### ¿Cómo se distribuye generalmente la inversión en los medios?""")
     list_metrics = ['mean', 'std', 'max', 'cv']
     opcion_metric = st.selectbox('Ordenar por: ', list_metrics)
     # Comportamiento de la inversion en medios a total
@@ -164,12 +164,12 @@ def main():
     st.plotly_chart(heat_dist)
     
     st.markdown("""
-                - La mayor inversion se llevo acabo en OpenTV, con una inversion de 18,164.39
-                - La menor inversion se llevo acabo en Email, con una inversion de 873.80
-                - Google y Radio tienen una distribucion de inversiones muy similar 
-                - La inversion en los medios como PayTV, Open TV y Facebook son muy similares
-                - En promedio seinvierten por lo menos 1000 pesos en los medios Facebook, Print, Email
-                - En promedio un poco mas de 3000 dolares en medios paytv opentv radio google
+                - La mayor inversión se llevo acabo en OpenTV, con una inversion de 18,164.39.
+                - La menor inversión se llevo acabo en Email, con una inversión de 873.80.
+                - Google y Radio tienen una distribución de inversiones muy similar. 
+                - La inversión en los medios como PayTV, Open TV y Facebook son muy similares.
+                - En promedio se invierten por lo menos 1000 USD en los medios Facebook, Print y Email.
+                - En promedio se invierten un poco más de 3000 USD en medios paytv, opentv, radio y google.
                 """)
     
     medios = ['Print', 'Email', 'Radio', 'Facebook', 'Google', 'PayTV', 'OpenTV']
@@ -177,11 +177,11 @@ def main():
     scatter_medio = go.Figure(data=[go.Scatter(x=data_CF['Date'], y=data_CF[opcion_metric], name=opcion_metric)])
     scatter_medio.update_layout(width=800, height=300)
     st.plotly_chart(scatter_medio)
-    st.markdown("""podemos ver que print y email mantienen sus inversiones por mas numero de semanas,
-                    mientras que los demas medios tienden a prender y apagar inversiones cada semana""")
+    st.markdown("""Podemos ver que print y email mantienen sus inversiones por más número de semanas,
+                    mientras que los demás medios tienden a prender y apagar inversiones cada semana.""")
     
     # Como afecta la inversion total de medios en las ventas
-    st.markdown("""#### Como afecta la inversion total de medios en las ventas? """)
+    st.markdown("""#### ¿Cómo afecta la inversión total de medios en las ventas? """)
     
     data_CF['year_month'] = data_CF['Date'].dt.strftime('%Y-%m')
     data_CF['InversionTotal'] = data_CF[['Print', 'Email', 'Radio', 'Facebook', 'Google', 'PayTV', 'OpenTV']].sum(axis=1)
@@ -202,8 +202,8 @@ def main():
                         barmode='group')
     inv_ventas.update_layout(width=800, height=500)
     st.plotly_chart(inv_ventas)
-    st.markdown('Las ventas responden positivamente a la inversion total de medios')
-    st.markdown('#### Como se correlacionan las ventas con la inversion en cada medio')
+    st.markdown('Las ventas responden positivamente a la inversión total de medios.')
+    st.markdown('#### ¿Cómo se correlacionan las ventas con la inversión en cada medio?')
     # graficar la data en streamlit
     df = data[['Sales','Print', 'Email', 
             'Radio', 'Facebook', 'Google', 
@@ -215,34 +215,34 @@ def main():
                                         colorscale='Viridis')
     st.plotly_chart(corr)
     
-    st.markdown("""Google tiene la mayor correlacion con las ventas,
-                Email aun que no es donde mas se invierte tiene un buen coeficiente,
-                PayTV por el contrario se invierte mucho y no tiene un coeficiente tan bueno como los demas medios""")
+    st.markdown("""Google tiene la mayor correlación con las ventas,
+                Email aunque no es donde más se invierte tiene un buen coeficiente,
+                PayTV por el contrario se invierte mucho y no tiene un coeficiente tan bueno como los demás medios.""")
     st.markdown("""
                 ### Modeling
-                El objetivo de este modelo es obtener la atribucion de cada medio a las ventas,
-                y para obtener estos valores se utilizara como base una regresion lineal multiple, añadiendo 
-                ingenieria de caracteristicas propias de marketing como lo son:
+                El objetivo de este modelo es obtener la atribución de cada medio a las ventas,
+                y para obtener estos valores se utilizará como base una regresión lineal múltiple, añadiendo 
+                ingeniería de características propias de marketing como lo son:
                 
-                - **Efectos de Arrastre**: Con esto se modela el impacto de la inversion en las semanas siguientes
-                    a la inversion mediante un efecto de degradacion semana a semana, estos parametros de cuantas semanas y con que fuerza
-                    dura la degradacion sera optimizado en el proceso de modeling, para obtener el mejor parametro para cada medio.
-                - **Efecto de Saturacion**: Con esto se modela como es que el medio se satura, es decir, cuando se invierten los primeros 10000 pesos
-                    tiene un mayor efecto, que cuando de invierten 5000 pesos mas estos ya no generan la mitad de los beneficios que generaron los primeros 10000,
+                - **Efectos de Arrastre**: Con esto se modela el impacto de la inversión actual en las semanas siguientes,
+                    mediante un efecto de degradación semana a semana, los parámetros de cuantas semanas y con que fuerza
+                    se degrada la inversión se optimizan en el proceso de modeling, para obtener el mejor valor para cada medio.
+                - **Efecto de Saturación**: Con esto se modela como es que el medio se satura, es decir, cuando se invierten los primeros 10000 USD
+                    tiene un mayor efecto que cuando de invierten 5000 USD más, estos ya no generan la mitad de los beneficios que generaron los primeros 10000 USD,
                     para generar este efecto se aplican funciones no lineales, como la exponencial o en este caso Adbudg.
                 
-                **Regresion Lineal Multiple** se utilizara con las variables que ya cuentan con las tranformaciones,
-                para obtener los coeficientes de la atribucion de cada medio a las ventas.
+                **Regresió Lineal Múltiple**: se utilizará con las variables que ya cuentan con las tranformaciones,
+                para obtener los coeficientes de la atribución de cada medio a las ventas.
                 
-                **ROI**: con los valores de ventas por medio y la inversion de cada medio podemos obtener el retorno de inversion, 
-                es decir, el beneficio que se obtiene de la inversion de cada medio.
+                **ROI**: con los valores de ventas por medio y la inversión de cada medio podemos obtener el retorno de inversion, 
+                es decir, el beneficio que se obtiene de la inversión de cada medio.
                 
-                Por ultimo graficaremos las curvas de retorno de inversion para cada medio, y el ROI para obtener los mejores montos de inversion.
+                Por último graficaremos las curvas de retorno de inversión para cada medio, y el ROI para obtener los mejores montos de inversión.
         """)
     st.image('./Resources/Pipeline.png', width=800)
     
     # Data con Features Engineering
-    st.markdown("""#### Como cambia la correlacion entre las ventas y la inversion de cada medio con la implementacion de Features Engineering""")
+    st.markdown("""#### ¿Cómo cambia la correlación entre las ventas y la inversión de cada medio con la implementación de Features Engineering?""")
     data_FE_raw = pd.read_csv('./DataSaturada.csv').set_index('Date')
     data_FE = data_FE_raw[['Sales','OpenTV_sat', 'PayTV_sat', 'Radio_sat', 'Print_sat', 'Facebook_sat', 'Google_sat', 'Email_sat']]
     data_FE = data_FE.corr()[['Sales']].round(2).sort_values(by='Sales', 
@@ -253,7 +253,7 @@ def main():
                                     colorscale='Viridis')
     st.plotly_chart(corr_FE)
     
-    st.markdown("""#### Que tan saturados se encuentran los medios?""")
+    st.markdown("""#### ¿Qué tan saturados se encuentran los medios?""")
     # Curvas de saturacion
     medios2 = ['Email', 'Radio', 'Facebook', 'Google', 'PayTV', 'OpenTV', 'Print']
     medio = st.selectbox('Selecciona un medio: ', medios2)
@@ -263,16 +263,16 @@ def main():
                             x = medio, 
                             y = medio_sat)
     st.plotly_chart(curvas_sat)
-    des_curvas = { 'Email' : 'Email aun no esta saturado, es decir, se podria invertir un poco mas para obtener una mejor atribucion', 
-                    'Radio' : 'Radio aun no esta saturado, se ve un crecimiento mas lineal, se podria invertir mas para obtener una mejor atribucion', 
-                    'Facebook' : 'Facebook ya esta saturado, se tendria que analizar si la marca solo esta decidiendo tener precencia en el medio',
-                    'Google' : 'Google ya esta saturado, se tendria que analizar si la marca solo esta decidiendo tener precencia en el medio', 
-                    'PayTV': 'PayTV ya esta saturado, se tendria que analizar si la marca solo esta decidiendo tener precencia en el medio',  
-                    'OpenTV' : 'OpenTV aun no esta saturado, se ve un crecimiento mas lineal, se podria invertir mas para obtener una mejor atribucion', 
-                    'Print' : 'Print aun no esta saturado, es decir, se podria invertir un poco mas para obtener una mejor atribucion'}
+    des_curvas = { 'Email' : 'Email aún no está saturado, es decir, se podría invertir un poco más para obtener una mejor atribución.', 
+                    'Radio' : 'Radio aún no está saturado, se ve un crecimiento más lineal, se podría invertir más para obtener una mejor atribución.', 
+                    'Facebook' : 'Facebook ya está saturado, se tendría que analizar si la marca solo esta decidiendo tener precencia en el medio.',
+                    'Google' : 'Google ya está saturado, se tendría que analizar si la marca solo esta decidiendo tener precencia en el medio.', 
+                    'PayTV': 'PayTV ya está saturado, se tendría que analizar si la marca solo esta decidiendo tener precencia en el medio.',  
+                    'OpenTV' : 'OpenTV aún no está saturado, se ve un crecimiento más lineal, se podría invertir más para obtener una mejor atribución.', 
+                    'Print' : 'Print aún no está saturado, es decir, se podría invertir un poco más para obtener una mejor atribución.'}
     st.markdown(des_curvas[medio])
     
-    st.markdown("""#### ROI - Retorno de inversion""")
+    st.markdown("""#### ROI - Retorno de inversión""")
     # ROI
     atribucion_ventas_medio = pd.read_csv('./adj_contributions.csv')
     atribucion_ventas_medio['Date'] = pd.to_datetime(atribucion_ventas_medio['Date'])
