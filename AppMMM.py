@@ -3,7 +3,6 @@
 # Framework: streamlit
 
 #  Importacion de librerias
-from tkinter import Y
 import streamlit as st
 import pandas as pd
 import numpy as np
